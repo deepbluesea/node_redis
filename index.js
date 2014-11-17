@@ -8,8 +8,6 @@ var net = require("net"),
     crypto = require("crypto"),
     parsers = [], commands,
     connection_id = 0,
-    default_port = 6379,
-    default_host = "127.0.0.1";
 
 // can set this to true to enable for all connections
 exports.debug_mode = false;
@@ -1214,38 +1212,7 @@ RedisClient.prototype.eval = RedisClient.prototype.EVAL = function () {
 
 
 exports.createClient = function(arg0, arg1, arg2){
-    if( arguments.length === 0 ){
-
-        // createClient()
-        return createClient_tcp(default_port, default_host, {});
-
-    } else if( typeof arg0 === 'number' ||
-        typeof arg0 === 'string' && arg0.match(/^\d+$/) ){
-
-        // createClient( 3000, host, options)
-        // createClient('3000', host, options)
-        return createClient_tcp(arg0, arg1, arg2);
-
-    } else if( typeof arg0 === 'string' ){
-
-        // createClient( '/tmp/redis.sock', options)
-        return createClient_unix(arg0,arg1);
-
-    } else if( arg0 !== null && typeof arg0 === 'object' ){
-
-        // createClient(options)
-        return createClient_tcp(default_port, default_host, arg0 );
-
-    } else if( arg0 === null && arg1 === null ){
-
-        // for backward compatibility
-        // createClient(null,null,options)
-        return createClient_tcp(default_port, default_host, arg2);
-
-    } else {
-        throw new Error('unknown type of connection in createClient()');
-    }
-}
+   
 
 var createClient_unix = function(path, options){
     var cnxOptions = {
@@ -1262,8 +1229,8 @@ var createClient_unix = function(path, options){
 
 var createClient_tcp = function (port_arg, host_arg, options) {
     var cnxOptions = {
-        'port' : port_arg || default_port,
-        'host' : host_arg || default_host,
+        'port' : port_arg,
+        'host' : host_arg,
         'family' : (options && options.family === 'IPv6') ? 6 : 4
     };
     var net_client = net.createConnection(cnxOptions);
